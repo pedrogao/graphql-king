@@ -22,7 +22,7 @@ const createToken = async (
 
 export default {
   Query: {
-    users: async (parent, args, { me }): Promise<User[]> => {
+    users: async (parent, args, { me }, info): Promise<User[]> => {
       const users = await User.findAll();
       return users;
     },
