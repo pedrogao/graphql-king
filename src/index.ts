@@ -1,4 +1,4 @@
-import Koa from 'koa';
+import express, { Request } from 'express';
 import http from 'http';
 import { sequelize } from './models';
 import User from './models/user';
@@ -6,10 +6,13 @@ import Message from './models/message';
 import schema from './schema';
 import resolvers from './resolvers';
 import { secret } from './config';
-import { ApolloServer, AuthenticationError } from 'apollo-server-koa';
+import {
+  ApolloServer,
+  AuthenticationError,
+} from 'apollo-server-express';
 import jwt from 'jsonwebtoken';
 
-const app = new Koa();
+const app = express();
 
 const port = process.env.SERVER_PORT || 3000;
 
@@ -20,12 +23,12 @@ export interface ParsedToken {
   role: string;
 }
 
-const getMe = async req => {
+const getMe = async (req: Request) => {
   const token = req.headers['x-token'];
-
   if (token) {
     try {
-      return await jwt.verify(token, secret);
+      const decoded = await jwt.verify(token as string, secret);
+      return decoded as ParsedToken;
     } catch (e) {
       throw new AuthenticationError(
         'Your session expired. Sign in again.'
@@ -41,31 +44,25 @@ const server = new ApolloServer({
   resolvers,
   debug: true,
   formatError: error => {
+    // data, errors, and extensions are the only top-level fields
+    // error.originalError
     const message = error.message
       .replace('SequelizeValidationError: ', '')
       .replace('Validation error: ', '');
-    // console.log(JSON.stringify(error, null, '  '));
-    // return {
-    //   ...error,
-    //   message,
-    // };
-    let code = error.extensions && error.extensions.code;
-    return {
-      message,
-      code: code || 999,
-    };
+    error.message = message;
+    return error;
   },
   formatResponse: res => {
-    // console.log(JSON.stringify(res, null, '  '));
+    // data, errors, and extensions are the only top-level fields
+    console.log(JSON.stringify(res, null, '  '));
     return res;
   },
-  context: async ({ ctx, connection }) => {
+  context: async ({ req, connection }) => {
     if (connection) {
       // 支持websocket等长链接
       return {};
     }
-    if (ctx) {
-      const { req } = ctx;
+    if (req) {
       const me = await getMe(req);
       return {
         me,
@@ -76,7 +73,7 @@ const server = new ApolloServer({
 
 server.applyMiddleware({ app, path: '/graphql' });
 
-const httpServer = http.createServer(app.callback());
+const httpServer = http.createServer(app);
 
 server.installSubscriptionHandlers(httpServer);
 

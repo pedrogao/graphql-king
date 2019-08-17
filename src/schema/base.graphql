@@ -1,0 +1,12 @@
+interface MutationResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+}
+
+type UpdateUserMutationResponse implements MutationResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  user: User
+}

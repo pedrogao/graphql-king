@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-koa';
+import { gql } from 'apollo-server-express';
 import { readFileSync } from 'fs';
 
 export default gql(

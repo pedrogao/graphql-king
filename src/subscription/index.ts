@@ -1,4 +1,4 @@
-import { PubSub } from 'apollo-server-koa';
+import { PubSub } from 'apollo-server-express';
 
 import * as messageEvent from './message';
 

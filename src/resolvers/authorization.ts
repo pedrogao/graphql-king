@@ -1,4 +1,4 @@
-import { ForbiddenError } from 'apollo-server-koa';
+import { ForbiddenError } from 'apollo-server-express';
 import { combineResolvers, skip } from 'graphql-resolvers';
 
 export const isAuthenticated = (parent, args, { me }) =>

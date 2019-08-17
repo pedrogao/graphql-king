@@ -3,7 +3,7 @@ import { combineResolvers } from 'graphql-resolvers';
 import {
   AuthenticationError,
   UserInputError,
-} from 'apollo-server-koa';
+} from 'apollo-server-express';
 import User from '../models/user';
 import { isAuthenticated, isAdmin } from './authorization';
 import { secret, expiresIn } from '../config';
