@@ -8,6 +8,7 @@ import User from '../models/user';
 import { isAuthenticated, isAdmin } from './authorization';
 import { secret, expiresIn } from '../config';
 import Message from '../models/message';
+import { NotFoundError } from '../exceptions/notfound';
 
 const createToken = async (
   user: User,
@@ -28,11 +29,14 @@ export default {
     },
     user: async (parent, { id }, { me }): Promise<User> => {
       const user = await User.findByPk(id);
+      if (!user) {
+        throw new NotFoundError('未找到用户');
+      }
       return user;
     },
     me: async (parent, args, { me }) => {
       if (!me) {
-        return null;
+        throw new NotFoundError('未找到用户');
       }
       return await User.findByPk(me.id);
     },

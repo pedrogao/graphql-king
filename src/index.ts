@@ -1,5 +1,6 @@
 import express, { Request } from 'express';
 import http from 'http';
+import cors from 'cors';
 import { sequelize } from './models';
 import User from './models/user';
 import Message from './models/message';
@@ -9,10 +10,13 @@ import { secret } from './config';
 import {
   ApolloServer,
   AuthenticationError,
+  ValidationError,
 } from 'apollo-server-express';
 import jwt from 'jsonwebtoken';
 
 const app = express();
+
+app.use(cors());
 
 const port = process.env.SERVER_PORT || 3000;
 
@@ -42,19 +46,37 @@ const server = new ApolloServer({
   playground: true,
   typeDefs: schema,
   resolvers,
-  debug: true,
+  debug: false,
   formatError: error => {
     // data, errors, and extensions are the only top-level fields
-    // error.originalError
-    const message = error.message
-      .replace('SequelizeValidationError: ', '')
-      .replace('Validation error: ', '');
-    error.message = message;
+    // const message = error.message
+    //   .replace('SequelizeValidationError: ', '')
+    //   .replace('Validation error: ', '');
+    // error.message = message;
+    if (
+      error instanceof ValidationError ||
+      error.originalError instanceof ValidationError
+    ) {
+      error.extensions!.error_code = 10000;
+      return error;
+    }
+    if (error.extensions) {
+      if (!error.extensions.error_code) {
+        error.extensions.error_code = 9999;
+        return error;
+      }
+    } else {
+      // @ts-ignore
+      error.extensions = {
+        error_code: 9999,
+        code: 'UNKNOWN',
+      };
+      return error;
+    }
     return error;
   },
   formatResponse: res => {
-    // data, errors, and extensions are the only top-level fields
-    console.log(JSON.stringify(res, null, '  '));
+    // console.log(JSON.stringify(res, null, '  '));
     return res;
   },
   context: async ({ req, connection }) => {
