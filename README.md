@@ -26,32 +26,6 @@ apollo 内置了统一的的异常处理和基础的异常类，且不能更改�
 
 数据统一在 data 字段下
 
-- error(异常，不可饶恕的错误)
-
-```json
-{
-  "error": {
-    "errors": [
-      {
-        "message": "Cannot query field \"usernames\" on type \"User\". Did you mean \"username\"?",
-        "locations": [
-          {
-            "line": 7,
-            "column": 5
-          }
-        ],
-        "extensions": {
-          "code": "GRAPHQL_VALIDATION_FAILED",
-          "error_code": 10000
-        }
-      }
-    ]
-  }
-}
-```
-
-一般出现在数据字段校验失败（目前只找到了这种）
-
 - errors(失败)
 
 生产环境下的结果：
@@ -70,6 +44,8 @@ apollo 内置了统一的的异常处理和基础的异常类，且不能更改�
 ```
 
 开发环境下增加了异常的堆栈信息方便调试，apollo 默认不向日志或者终端记录异常信息
+
+当请求的顶部字段只有一个出现错误，或者出现字段校验错误时，只会返回一个 error
 
 - data 和 errors
 

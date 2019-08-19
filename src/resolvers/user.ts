@@ -1,25 +1,10 @@
-import jwt from 'jsonwebtoken';
 import { combineResolvers } from 'graphql-resolvers';
-import {
-  AuthenticationError,
-  UserInputError,
-} from 'apollo-server-express';
 import User from '../models/user';
 import { isAuthenticated, isAdmin } from './authorization';
 import { secret, expiresIn } from '../config';
 import Message from '../models/message';
-import { NotFoundError } from '../exceptions/notfound';
-
-const createToken = async (
-  user: User,
-  secret: string,
-  expiresIn: string
-) => {
-  const { id, email, username, role } = user;
-  return await jwt.sign({ id, email, username, role }, secret, {
-    expiresIn: expiresIn,
-  });
-};
+import { NotFoundError, AuthenticationError } from '../errors';
+import { createToken } from '../libs/token';
 
 export default {
   Query: {
@@ -30,13 +15,13 @@ export default {
     user: async (parent, { id }, { me }): Promise<User> => {
       const user = await User.findByPk(id);
       if (!user) {
-        throw new NotFoundError('未找到用户');
+        throw new NotFoundError({ message: '未找到用户' });
       }
       return user;
     },
     me: async (parent, args, { me }) => {
       if (!me) {
-        throw new NotFoundError('未找到用户');
+        throw new NotFoundError({ message: '未找到用户' });
       }
       return await User.findByPk(me.id);
     },
@@ -57,15 +42,17 @@ export default {
     signIn: async (parent, { login, password }, { me }) => {
       const user = await User.findByLogin(login);
       if (!user) {
-        throw new UserInputError(
-          'No user found with this login credentials.'
-        );
+        throw new NotFoundError({
+          message: '用户不存在，请检查登陆用户名或登陆邮箱',
+        });
       }
 
       const isValid = await user.validatePassword(password);
 
       if (!isValid) {
-        throw new AuthenticationError('Invalid password.');
+        throw new AuthenticationError({
+          message: '输入密码错误，请检查后重新输入',
+        });
       }
 
       return { token: createToken(user, secret, expiresIn) };
