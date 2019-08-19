@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/user';
 import { Request } from 'express';
-import { secret } from '../config';
+import { config } from '../libs/config';
 import { AuthenticationError } from '../errors';
+
+const secret = config.getItem('secret');
 
 export interface ParsedToken {
   id: number;

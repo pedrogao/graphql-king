@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node src/index.ts",
-    "dev": "nodemon",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "cross-env KING_ENV=debug ts-node src/index.ts",
+    "dev": "cross-env KING_ENV=debug nodemon",
+    "test": "echo \"hello world\" && exit 1"
   },
   "keywords": [
     "graphql",
@@ -24,18 +24,22 @@
     "graphql-iso-date": "^3.6.1",
     "graphql-resolvers": "^0.3.3",
     "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.15",
     "sequelize": "^5.15.0",
     "sqlite3": "^4.0.9",
     "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^10.0.28-alpha",
+    "@types/cors": "^2.8.6",
     "@types/express": "^4.17.0",
     "@types/graphql": "^14.2.3",
     "@types/graphql-iso-date": "^3.3.1",
     "@types/graphql-resolvers": "^0.2.1",
     "@types/jsonwebtoken": "^8.3.3",
+    "@types/lodash": "^4.14.137",
     "@types/sqlite3": "^3.1.5",
+    "cross-env": "^5.2.0",
     "nodemon": "^1.19.1",
     "ts-node": "^8.3.0",
     "typescript": "^3.5.3"

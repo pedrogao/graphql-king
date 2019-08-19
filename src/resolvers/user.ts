@@ -1,10 +1,13 @@
 import { combineResolvers } from 'graphql-resolvers';
 import User from '../models/user';
 import { isAuthenticated, isAdmin } from './authorization';
-import { secret, expiresIn } from '../config';
+import { config } from '../libs/config';
 import Message from '../models/message';
 import { NotFoundError, AuthenticationError } from '../errors';
 import { createToken } from '../libs/token';
+
+const secret = config.getItem('secret');
+const expiresIn = config.getItem('expiresIn');
 
 export default {
   Query: {

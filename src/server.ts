@@ -10,12 +10,14 @@ const app = express();
 
 app.use(cors());
 
+const debug = process.env.KING_ENV === 'debug';
+
 const server = new ApolloServer({
   introspection: true,
   playground: true,
   typeDefs: schema,
   resolvers,
-  debug: true,
+  debug: debug,
   formatError: error => {
     // data, errors are the only top-level fields
     // and extensions are on the bottom of errors

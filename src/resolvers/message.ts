@@ -3,17 +3,24 @@ import User from '../models/user';
 import { combineResolvers } from 'graphql-resolvers';
 import { isAuthenticated } from './authorization';
 import pubsub, { messageEvent } from '../subscription';
+import { NotFoundError } from '../errors';
 
 export default {
   Query: {
     message: async (parent, { id }, { me }) => {
       const message = await Message.findByPk(id);
+      if (!message) {
+        throw new NotFoundError({ message: '未找到消息' });
+      }
       return message;
     },
     messages: async (parent, { limit }, { me }) => {
       const { rows, count } = await Message.findAndCountAll({
         limit: limit,
       });
+      if (!rows || rows.size < 1) {
+        throw new NotFoundError({ message: '未找到消息' });
+      }
       return {
         collections: rows,
         total_num: count,
