@@ -3,7 +3,6 @@ import http from 'http';
 import cors from 'cors';
 import schema from './schema';
 import resolvers from './resolvers';
-import { getMe } from './libs/token';
 import { ApolloServer, ValidationError } from 'apollo-server-express';
 
 const app = express();
@@ -52,9 +51,8 @@ const server = new ApolloServer({
       return {};
     }
     if (req) {
-      const me = await getMe(req);
       return {
-        me,
+        req,
       };
     }
   },

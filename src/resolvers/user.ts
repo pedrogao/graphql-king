@@ -1,10 +1,11 @@
 import { combineResolvers } from 'graphql-resolvers';
 import User from '../models/user';
-import { isAuthenticated, isAdmin } from './authorization';
+import { isAdmin, loginRequired } from './authorization';
 import { config } from '../libs/config';
 import Message from '../models/message';
 import { NotFoundError, AuthenticationError } from '../errors';
 import { createToken } from '../libs/token';
+import LoginValidator from '../validators/login';
 
 const secret = config.getItem('secret');
 const expiresIn = config.getItem('expiresIn');
@@ -22,12 +23,15 @@ export default {
       }
       return user;
     },
-    me: async (parent, args, { me }) => {
-      if (!me) {
-        throw new NotFoundError({ message: '未找到用户' });
+    me: combineResolvers(
+      loginRequired,
+      async (parent, args, { me }) => {
+        if (!me) {
+          throw new NotFoundError({ message: '未找到用户' });
+        }
+        return await User.findByPk(me.id);
       }
-      return await User.findByPk(me.id);
-    },
+    ),
   },
 
   Mutation: {
@@ -42,7 +46,9 @@ export default {
       };
     },
 
-    signIn: async (parent, { login, password }, { me }) => {
+    signIn: async (parent, args, { me }) => {
+      const validator = await new LoginValidator(args).validate();
+      const { login, password } = args;
       const user = await User.findByLogin(login);
       if (!user) {
         throw new NotFoundError({
@@ -62,7 +68,7 @@ export default {
     },
 
     updateUser: combineResolvers(
-      isAuthenticated,
+      loginRequired,
       async (parent, { username }, { me }) => {
         const user: User = await User.findByPk(me.id);
         return await user.update({ username });

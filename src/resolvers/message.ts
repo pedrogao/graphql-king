@@ -1,7 +1,7 @@
 import Message from '../models/message';
 import User from '../models/user';
 import { combineResolvers } from 'graphql-resolvers';
-import { isAuthenticated } from './authorization';
+import { loginRequired } from './authorization';
 import pubsub, { messageEvent } from '../subscription';
 import { NotFoundError } from '../errors';
 
@@ -30,7 +30,7 @@ export default {
 
   Mutation: {
     createMessage: combineResolvers(
-      isAuthenticated,
+      loginRequired,
       async (parent, { text }, { me }) => {
         const message = await Message.create({
           text,
@@ -46,7 +46,7 @@ export default {
     ),
 
     deleteMessage: combineResolvers(
-      isAuthenticated,
+      loginRequired,
       async (parent, { id }, { me }) => {
         return await Message.destroy({
           where: {

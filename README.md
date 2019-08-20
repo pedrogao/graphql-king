@@ -2,9 +2,46 @@
 
 > graphql apollo-server 的最佳 API 实现
 
+## 使用
+
+### 安装依赖
+
+```bash
+npm install
+```
+
+### 开发环境下运行
+
+```bash
+npm run dev
+```
+
+也可以选择普通的运行方式（非 nodemon）
+
+```bash
+npm run start
+```
+
+## TODOLIST
+
+- [x] apollo2 已经是 best practice（最佳实践）了
+- [x] 替换数据库为 sqlite3，方便测试
+- [x] 支持 subscription
+- [x] .graphql 文件范式
+- [x] jwt 令牌支持
+- [x] 参数校验
+- [x] 权限认证
+- [x] 支持文件和环境配置
+- [x] 自定义错误
+- [ ] 其它....
+
 ## 闲聊
 
+### 技术选型
+
 **本来想使用 koa 作为 apollo 的服务器基础框架，但是 apollo 默认为 express，且大量的的文档资料以及生产项目均使用 express，所以换成 express，起初的版本用 koa 搭建的，其实改动真的很小，代码在 koa 分支上**
+
+### 返回结果及异常
 
 apollo 内置了统一的的异常处理和基础的异常类，且不能更改，因此不能再自定义新的基础异常类
 
@@ -82,32 +119,3 @@ apollo 内置了统一的的异常处理和基础的异常类，且不能更改�
 ```
 
 注意：**apollo 的返回结果顶部字段（top fields）只能有`errors`，`data`和`error`这三个，因此可根据这两个字段判断请求是否成功，当出现 errors 时，可根据下面的 extensions 和 message 来判断错误的类型以及信息**
-
-## 使用
-
-### 安装依赖
-
-```bash
-npm install
-```
-
-### 开发环境下运行
-
-```bash
-npm run dev
-```
-
-也可以选择普通的运行方式（非 nodemon）
-
-```bash
-npm run start
-```
-
-## TODOLIST
-
-- [x] apollo2 已经是 best practice（最佳实践）了
-- [x] 替换数据库为 sqlite3，方便测试
-- [x] 支持 subscription
-- [x] .graphql 文件范式
-- [x] jwt 令牌支持
-- [ ] 其它....
