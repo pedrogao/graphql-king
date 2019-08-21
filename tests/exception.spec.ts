@@ -1,7 +1,6 @@
-import { NotFoundError } from '../src/exceptions/notfound';
+import { NotFoundError } from '../src/errors';
 
-const e = new NotFoundError('未找到', {
-  error_code: 10000,
+test('异常的构造函数', async () => {
+  const e = new NotFoundError({ message: 'hello' });
+  expect(e.message).toBe('hello');
 });
-
-console.log(e);
