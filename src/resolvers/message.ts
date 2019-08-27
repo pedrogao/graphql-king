@@ -18,9 +18,6 @@ export default {
       const { rows, count } = await Message.findAndCountAll({
         limit: limit,
       });
-      if (!rows || rows.size < 1) {
-        throw new NotFoundError({ message: '未找到消息' });
-      }
       return {
         collections: rows,
         total_num: count,
